@@ -1,3 +1,3 @@
-module github.com/signalsciences/go-sigsci
+module github.com/dacamp/go-sigsci
 
 go 1.12

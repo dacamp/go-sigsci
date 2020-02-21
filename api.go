@@ -741,6 +741,8 @@ type Request struct {
 	Tags              []RequestTag
 }
 
+type RequestsResponse requestsResponse
+
 // requestsResponse is the response for the search requests endpoint
 type requestsResponse struct {
 	TotalCount int
@@ -749,23 +751,23 @@ type requestsResponse struct {
 }
 
 // SearchRequests searches requests.
-func (sc *Client) SearchRequests(corpName, siteName string, query url.Values) (next string, requests []Request, err error) {
+func (sc *Client) SearchRequests(corpName, siteName string, query url.Values) (response RequestsResponse, next string, requests []Request, err error) {
 	url := fmt.Sprintf("/v0/corps/%s/sites/%s/requests", corpName, siteName)
 	if query.Encode() != "" {
 		url += "?" + query.Encode()
 	}
+	var r RequestsResponse
 	resp, err := sc.doRequest("GET", url, "")
 	if err != nil {
-		return "", []Request{}, err
+		return r, "", []Request{}, err
 	}
 
-	var r requestsResponse
 	err = json.Unmarshal(resp, &r)
 	if err != nil {
-		return "", []Request{}, err
+		return r, "", []Request{}, err
 	}
 
-	return r.Next["uri"], r.Data, nil
+	return r, r.Next["uri"], r.Data, nil
 }
 
 // GetRequest gets a request by id.
