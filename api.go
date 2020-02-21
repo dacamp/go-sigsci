@@ -751,23 +751,23 @@ type requestsResponse struct {
 }
 
 // SearchRequests searches requests.
-func (sc *Client) SearchRequests(corpName, siteName string, query url.Values) (response RequestsResponse, next string, requests []Request, err error) {
+func (sc *Client) SearchRequests(corpName, siteName string, query url.Values) (response RequestsResponse, err error) {
 	url := fmt.Sprintf("/v0/corps/%s/sites/%s/requests", corpName, siteName)
 	if query.Encode() != "" {
 		url += "?" + query.Encode()
 	}
-	var r RequestsResponse
+
 	resp, err := sc.doRequest("GET", url, "")
 	if err != nil {
-		return r, "", []Request{}, err
+		return response, err
 	}
 
-	err = json.Unmarshal(resp, &r)
+	err = json.Unmarshal(resp, &response)
 	if err != nil {
-		return r, "", []Request{}, err
+		return response, err
 	}
 
-	return r, r.Next["uri"], r.Data, nil
+	return
 }
 
 // GetRequest gets a request by id.
